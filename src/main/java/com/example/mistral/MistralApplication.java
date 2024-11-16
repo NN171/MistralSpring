@@ -1,10 +1,15 @@
 package com.example.mistral;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.DEFAULT_CHAT_MEMORY_CONVERSATION_ID;
 
 @SpringBootApplication
 public class MistralApplication {
@@ -14,10 +19,20 @@ public class MistralApplication {
     }
 
     @Bean
-    ChatClient provideChatClient(ChatClient.Builder chatClientBuilder) {
+    public ChatMemory chatMemory() {
+        return new InMemoryChatMemory();
+    }
+
+    @Bean
+    ChatClient provideChatClient(ChatClient.Builder chatClientBuilder, ChatMemory chatMemory) {
+        System.out.println("Create chat client!!!!!!!!!!");
         return chatClientBuilder
                 .defaultSystem(
                         "Ты семейный помощник. Отвечай кратко и по делу. Отвечай на том же языке, на котором пришел запрос."
+                )
+                .defaultAdvisors(
+                        new MessageChatMemoryAdvisor(chatMemory, DEFAULT_CHAT_MEMORY_CONVERSATION_ID, 10),
+                        new SimpleLoggerAdvisor()
                 )
                 .build();
     }
