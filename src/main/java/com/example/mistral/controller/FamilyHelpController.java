@@ -24,6 +24,9 @@ public class FamilyHelpController {
     @Value("classpath:/static/family/HelpFamily.txt")
     private Resource familyHelpSystem;
 
+    @Value("classpath:/static/family/EventSystem.txt")
+    private Resource familyEventSystem;
+
     @Autowired
     private ChatClient chatClient;
 
@@ -51,6 +54,7 @@ public class FamilyHelpController {
         var response = chatClient.prompt()
                 .system(familyFavoritesSystem)
                 .user(prompt)
+                .functions("eventsByDateFunction")
                 .call()
                 .chatResponse()
                 .getResult()
@@ -68,6 +72,23 @@ public class FamilyHelpController {
         var response = chatClient.prompt()
                 .system(familyHelpSystem)
                 .user("Кому нужно помочь из моей семьи?")
+                .call()
+                .chatResponse()
+                .getResult()
+                .getOutput()
+                .getContent();
+
+        System.out.println("Response: " + response);
+        return response;
+    }
+
+    @GetMapping("/event")
+    String eventFamily() {
+        System.out.println("eventFamily called");
+
+        var response = chatClient.prompt()
+                .system(familyEventSystem)
+                .user("Какие общие события ждут нас в будущем. Напомни когда они и будут ли")
                 .call()
                 .chatResponse()
                 .getResult()

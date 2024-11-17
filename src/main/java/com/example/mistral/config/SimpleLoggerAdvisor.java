@@ -18,8 +18,13 @@ public class SimpleLoggerAdvisor implements CallAroundAdvisor, StreamAroundAdvis
 
     @Override
     public AdvisedResponse aroundCall(AdvisedRequest advisedRequest, CallAroundAdvisorChain chain) {
-
-        System.out.println("BEFORE: {}" + advisedRequest);
+        var model = advisedRequest.chatOptions().getModel();
+        var maxTokens = advisedRequest.chatOptions().getMaxTokens();
+        var temperture = advisedRequest.chatOptions().getTemperature();
+        System.out.println("model: " + model +
+                "\n maxTokens: " + maxTokens +
+                "\n temperture: " + temperture);
+        System.out.println("aroundCall options:" + advisedRequest);
 
         AdvisedResponse advisedResponse = chain.nextAroundCall(advisedRequest);
 
